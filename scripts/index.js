@@ -8,6 +8,7 @@ function createCard(card, deleteCard) {
   deleteButton.addEventListener('click', () => deleteCard(cardElement))
 
   cardImage.src = card.link
+  cardImage.alt = card.name
   cardTitle.textContent = card.name
 
   return cardElement
