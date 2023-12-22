@@ -5,13 +5,12 @@ import {
 	likeCard
 } from './components/card'
 import { initialCards } from './components/cards'
-import { closeModal, openImageModal, openModal } from './components/modal'
+import { closeModal, openModal } from './components/modal'
 import './pages/index.css'
 
 const editButton = document.querySelector('.profile__edit-button')
 const addButton = document.querySelector('.profile__add-button')
 const modalEdit = document.querySelector('.popup_type_edit')
-const modalCloseButtons = document.querySelectorAll('.popup__close')
 const editForm = document.forms.edit_profile
 const nameInput = editForm.querySelector('.popup__input_type_name')
 const jobInput = editForm.querySelector('.popup__input_type_description')
@@ -28,19 +27,9 @@ editButton.addEventListener('click', () => {
 
 addButton.addEventListener('click', () => openModal(modalNewCard))
 
-modalCloseButtons.forEach(button => {
-	button.addEventListener('click', evt => {
-		const modal = evt.target.closest('.popup')
-		closeModal(modal)
-	})
-})
-
 function setFormValues() {
-	const currentName = profileName.textContent
-	const currentDescription = profileDescription.textContent
-
-	nameInput.value = currentName
-	jobInput.value = currentDescription
+	nameInput.value = profileName.textContent
+	jobInput.value = profileDescription.textContent
 }
 
 function handleFormSubmit(evt) {
@@ -57,7 +46,6 @@ function handleFormSubmit(evt) {
 
 editForm.addEventListener('submit', handleFormSubmit)
 newPlaceForm.addEventListener('submit', createNewPlace)
-placesList.addEventListener('click', openImageModal)
 
 function renderCards(cards) {
 	cards.forEach(card => {

@@ -1,4 +1,7 @@
 const modals = document.querySelectorAll('.popup')
+const modalImage = document.querySelector('.popup_type_image')
+const popupImage = modalImage.querySelector('.popup__image')
+const popupCaption = modalImage.querySelector('.popup__caption')
 let isEscListenerAdded = false
 
 const openModal = modal => {
@@ -26,21 +29,17 @@ function removeEscListener() {
 }
 
 function closeModalOnEsc(evt) {
-	const openedModal = document.querySelector('.popup__opened')
-	if (openedModal && evt.key === 'Escape') {
+	if (evt.key === 'Escape') {
+		const openedModal = document.querySelector('.popup__opened')
 		closeModal(openedModal)
-		removeEscListener()
 	}
 }
 
 function openImageModal(evt) {
 	if (evt.target.classList.contains('card__image')) {
-		const modalImage = document.querySelector('.popup_type_image')
 		const cardElement = evt.target.closest('.places__item')
 		const cardTitle = cardElement.querySelector('.card__title').textContent
 		const cardImageLink = evt.target.getAttribute('src')
-		const popupImage = modalImage.querySelector('.popup__image')
-		const popupCaption = modalImage.querySelector('.popup__caption')
 
 		popupImage.src = cardImageLink
 		popupImage.alt = cardTitle
@@ -52,12 +51,10 @@ function openImageModal(evt) {
 
 modals.forEach(modal => {
 	modal.addEventListener('click', evt => {
-		if (evt.target === modal) {
+		if (evt.target === modal || evt.target.classList.contains('popup__close')) {
 			closeModal(modal)
 		}
 	})
 })
-
-document.addEventListener('keydown', closeModalOnEsc)
 
 export { closeModal, openImageModal, openModal }

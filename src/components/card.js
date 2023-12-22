@@ -1,5 +1,5 @@
 import { modalNewCard, newPlaceForm, placesList } from '../index'
-import { closeModal } from './modal'
+import { closeModal, openImageModal } from './modal'
 
 function createCard(card, deleteCard, likeCard) {
 	const cardTemplate = document.querySelector('#card-template').content
@@ -12,6 +12,8 @@ function createCard(card, deleteCard, likeCard) {
 	deleteButton.addEventListener('click', () => deleteCard(cardElement))
 
 	likeButton.addEventListener('click', () => likeCard(likeButton))
+
+	cardImage.addEventListener('click', openImageModal)
 
 	cardImage.src = card.link
 	cardImage.alt = card.name
