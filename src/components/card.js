@@ -1,7 +1,7 @@
 import { modalNewCard, newPlaceForm, placesList } from '../index'
 import { closeModal, openImageModal } from './modal'
 
-function createCard(card, deleteCard, likeCard) {
+function createCard(card, deleteCard, likeCard, openImageModal) {
 	const cardTemplate = document.querySelector('#card-template').content
 	const cardElement = cardTemplate.querySelector('.card').cloneNode(true)
 	const cardImage = cardElement.querySelector('.card__image')
@@ -13,7 +13,7 @@ function createCard(card, deleteCard, likeCard) {
 
 	likeButton.addEventListener('click', () => likeCard(likeButton))
 
-	cardImage.addEventListener('click', openImageModal)
+	cardImage.addEventListener('click', evt => openImageModal(evt))
 
 	cardImage.src = card.link
 	cardImage.alt = card.name
@@ -36,7 +36,7 @@ function createNewPlace(evt) {
 		link: imageUrl
 	}
 
-	const cardElement = createCard(newCard, deleteCard, likeCard)
+	const cardElement = createCard(newCard, deleteCard, likeCard, openImageModal)
 
 	placesList.prepend(cardElement)
 

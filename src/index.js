@@ -5,7 +5,7 @@ import {
 	likeCard
 } from './components/card'
 import { initialCards } from './components/cards'
-import { closeModal, openModal } from './components/modal'
+import { closeModal, openImageModal, openModal } from './components/modal'
 import './pages/index.css'
 
 const editButton = document.querySelector('.profile__edit-button')
@@ -49,7 +49,7 @@ newPlaceForm.addEventListener('submit', createNewPlace)
 
 function renderCards(cards) {
 	cards.forEach(card => {
-		const cardElement = createCard(card, deleteCard, likeCard)
+		const cardElement = createCard(card, deleteCard, likeCard, openImageModal)
 		placesList.append(cardElement)
 	})
 }
