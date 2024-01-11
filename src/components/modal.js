@@ -4,38 +4,38 @@ const popupImage = modalImage.querySelector('.popup__image')
 const popupCaption = modalImage.querySelector('.popup__caption')
 let isEscListenerAdded = false
 
-const openModal = modal => {
+export const openModal = modal => {
 	modal.classList.add('popup__opened')
 	addEscListener()
 }
 
-const closeModal = modal => {
+export const closeModal = modal => {
 	if (modal) {
 		modal.classList.remove('popup__opened')
 		removeEscListener()
 	}
 }
 
-function addEscListener() {
+const addEscListener = () => {
 	if (!isEscListenerAdded) {
 		document.addEventListener('keydown', closeModalOnEsc)
 		isEscListenerAdded = true
 	}
 }
 
-function removeEscListener() {
+const removeEscListener = () => {
 	document.removeEventListener('keydown', closeModalOnEsc)
 	isEscListenerAdded = false
 }
 
-function closeModalOnEsc(evt) {
+const closeModalOnEsc = evt => {
 	if (evt.key === 'Escape') {
 		const openedModal = document.querySelector('.popup__opened')
 		closeModal(openedModal)
 	}
 }
 
-function openImageModal(evt) {
+export const openImageModal = evt => {
 	if (evt.target.classList.contains('card__image')) {
 		const cardElement = evt.target.closest('.places__item')
 		const cardTitle = cardElement.querySelector('.card__title').textContent
@@ -56,5 +56,3 @@ modals.forEach(modal => {
 		}
 	})
 })
-
-export { closeModal, openImageModal, openModal }
