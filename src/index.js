@@ -3,12 +3,14 @@ import {
 	getInitialCards,
 	getUserInfo,
 	likeCard,
+	postNewCard,
 	renderLoading,
 	updateAvatar,
 	updateUserProfile
 } from './components/api'
-import { createCard, createNewPlace } from './components/card'
-import { closeModal, openImageModal, openModal } from './components/modal'
+import { createCard } from './components/card'
+import { closeModal, openModal } from './components/modal'
+import { catchError } from './components/utils.js'
 import { clearValidation, enableValidation } from './components/validation.js'
 import './pages/index.css'
 
@@ -27,21 +29,28 @@ const placesList = document.querySelector('.places__list')
 const modalNewCard = document.querySelector('.popup_type_new-card')
 const profileImage = document.querySelector('.profile__image')
 const confirmationModal = document.querySelector('.popup_type_delete_card')
+const cardNameInput = document.querySelector('.popup__input_type_card-name')
+const imageUrlInput = document.querySelector('.popup__input_type_url')
+const modalImage = document.querySelector('.popup_type_image')
+const popupImage = modalImage.querySelector('.popup__image')
+const popupCaption = modalImage.querySelector('.popup__caption')
+const profileAvatar = document.querySelector('.profile__image')
+let userId
 
 profileImage.addEventListener('click', () => {
 	openModal(editAvatarForm)
-	clearValidation(editAvatarForm, editAvatarFormSettings)
+	clearValidation(editAvatarForm, formSettings)
 })
 
 editButton.addEventListener('click', () => {
 	openModal(modalEdit)
-	clearValidation(editForm, editFormSettings)
+	clearValidation(editForm, formSettings)
 	setFormValues()
 })
 
 addButton.addEventListener('click', () => {
 	openModal(modalNewCard)
-	clearValidation(newPlaceForm, newPlaceFormSettings)
+	clearValidation(newPlaceForm, formSettings)
 })
 
 const setFormValues = () => {
@@ -52,54 +61,77 @@ const setFormValues = () => {
 const handleFormSubmit = evt => {
 	evt.preventDefault()
 	renderLoading(true)
-	updateUserProfile(nameInput.value, jobInput.value).finally(() =>
-		renderLoading(false)
-	)
-
-	closeModal(modalEdit)
+	updateUserProfile(nameInput.value, jobInput.value)
+		.then(data => {
+			profileName.textContent = data.name
+			profileDescription.textContent = data.about
+		})
+		.then(() => closeModal(modalEdit))
+		.catch(catchError)
+		.finally(() => renderLoading(false))
 }
 
 const handleAvatarFormSubmit = evt => {
 	evt.preventDefault()
 	renderLoading(true)
-	updateAvatar(avatarInput.value).finally(() => renderLoading(false))
-
-	closeModal(editAvatarForm)
+	updateAvatar(avatarInput.value)
+		.then(data => {
+			profileAvatar.style.backgroundImage = `url(${data.avatar})`
+		})
+		.then(() => closeModal(editAvatarForm))
+		.catch(catchError)
+		.finally(() => renderLoading(false))
 }
 
 const handleConfirmationModal = (evt, cardElement, cardId) => {
 	evt.preventDefault()
 	deleteCard(cardElement, cardId)
+		.then(() => closeModal(confirmationModal))
+		.catch(catchError)
+}
 
-	closeModal(confirmationModal)
+const openImageModal = evt => {
+	if (evt.target.classList.contains('card__image')) {
+		const cardElement = evt.target.closest('.places__item')
+		const cardTitle = cardElement.querySelector('.card__title').textContent
+
+		popupImage.src = evt.target.getAttribute('src')
+		popupImage.alt = cardTitle
+		popupCaption.textContent = cardTitle
+
+		openModal(modalImage)
+	}
+}
+
+const createNewPlace = evt => {
+	evt.preventDefault()
+	renderLoading(true)
+	postNewCard(cardNameInput.value, imageUrlInput.value)
+		.then(newCard => {
+			const cardElement = createCard(
+				newCard,
+				deleteCard,
+				likeCard,
+				openImageModal,
+				userId
+			)
+
+			placesList.prepend(cardElement)
+		})
+		.then(() => newPlaceForm.reset())
+		.then(() => closeModal(modalNewCard))
+		.catch(catchError)
+		.finally(() => renderLoading(false))
 }
 
 editAvatarForm.addEventListener('submit', handleAvatarFormSubmit)
 editForm.addEventListener('submit', handleFormSubmit)
 newPlaceForm.addEventListener('submit', createNewPlace)
 
-const editFormSettings = {
-	formSelector: '.popup_type_edit .popup__form',
-	inputSelector: '.popup_type_edit .popup__input',
-	submitButtonSelector: '.popup_type_edit .popup__button',
-	inactiveButtonClass: 'popup__button_disabled',
-	inputErrorClass: 'popup__input_type_error',
-	errorClass: 'popup__error_visible'
-}
-
-const newPlaceFormSettings = {
-	formSelector: '.popup_type_new-card .popup__form',
-	inputSelector: '.popup_type_new-card .popup__input',
-	submitButtonSelector: '.popup_type_new-card .popup__button',
-	inactiveButtonClass: 'popup__button_disabled',
-	inputErrorClass: 'popup__input_type_error',
-	errorClass: 'popup__error_visible'
-}
-
-const editAvatarFormSettings = {
-	formSelector: '.popup_type_avatar .popup__form',
-	inputSelector: '.popup_type_avatar .popup__input',
-	submitButtonSelector: '.popup_type_avatar .popup__button',
+const formSettings = {
+	formSelector: '.popup__form',
+	inputSelector: '.popup__input',
+	submitButtonSelector: '.popup__button',
 	inactiveButtonClass: 'popup__button_disabled',
 	inputErrorClass: 'popup__input_type_error',
 	errorClass: 'popup__error_visible'
@@ -122,17 +154,18 @@ Promise.all([getUserInfo(), getInitialCards()])
 	.then(([userInfo, initialCardsData]) => {
 		renderCards(initialCardsData, userInfo._id)
 	})
-	.catch(error => {
-		console.log(error)
+	.catch(catchError)
+
+getUserInfo()
+	.then(data => {
+		userId = data._id
+		profileName.textContent = data.name
+		profileDescription.textContent = data.about
+		profileAvatar.style.backgroundImage = `url(${data.avatar})`
 	})
+	.catch(catchError)
 
-enableValidation(editFormSettings)
-enableValidation(newPlaceFormSettings)
-enableValidation(editAvatarFormSettings)
-
-clearValidation(editForm, editFormSettings)
-clearValidation(newPlaceForm, newPlaceFormSettings)
-clearValidation(editAvatarForm, editAvatarFormSettings)
+enableValidation(formSettings)
 
 export {
 	confirmationModal,

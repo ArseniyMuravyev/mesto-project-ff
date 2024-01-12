@@ -1,7 +1,4 @@
 const modals = document.querySelectorAll('.popup')
-const modalImage = document.querySelector('.popup_type_image')
-const popupImage = modalImage.querySelector('.popup__image')
-const popupCaption = modalImage.querySelector('.popup__caption')
 let isEscListenerAdded = false
 
 export const openModal = modal => {
@@ -32,20 +29,6 @@ const closeModalOnEsc = evt => {
 	if (evt.key === 'Escape') {
 		const openedModal = document.querySelector('.popup__opened')
 		closeModal(openedModal)
-	}
-}
-
-export const openImageModal = evt => {
-	if (evt.target.classList.contains('card__image')) {
-		const cardElement = evt.target.closest('.places__item')
-		const cardTitle = cardElement.querySelector('.card__title').textContent
-		const cardImageLink = evt.target.getAttribute('src')
-
-		popupImage.src = cardImageLink
-		popupImage.alt = cardTitle
-		popupCaption.textContent = cardTitle
-
-		openModal(modalImage)
 	}
 }
 

@@ -1,6 +1,4 @@
-import { profileDescription, profileName } from '../index'
-
-const profileAvatar = document.querySelector('.profile__image')
+import { checkResponse } from './utils'
 
 const config = {
 	baseUrl: 'https://nomoreparties.co/v1/wff-cohort-5',
@@ -13,37 +11,13 @@ const config = {
 export const getUserInfo = () => {
 	return fetch(`${config.baseUrl}/users/me`, {
 		headers: config.headers
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.then(data => {
-			profileName.textContent = data.name
-			profileDescription.textContent = data.about
-			profileAvatar.style.backgroundImage = `url(${data.avatar})`
-			return data
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
 export const getInitialCards = () => {
 	return fetch(`${config.baseUrl}/cards`, {
 		headers: config.headers
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
 export const updateUserProfile = (name, about) => {
@@ -54,20 +28,7 @@ export const updateUserProfile = (name, about) => {
 			name,
 			about
 		})
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.then(data => {
-			profileName.textContent = data.name
-			profileDescription.textContent = data.about
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
 export const postNewCard = (name, link) => {
@@ -79,56 +40,28 @@ export const postNewCard = (name, link) => {
 			link,
 			likes: 0
 		})
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
-export const likeCard = (likeButton, cardId) => {
-	const likesCountElement = likeButton.nextElementSibling
-
-	fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
+export const likeCard = (likeButton, cardId, userId) => {
+	return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
 		method: likeButton.classList.contains('card__like-button_is-active')
 			? 'DELETE'
 			: 'PUT',
 		headers: config.headers
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.then(data => {
-			likesCountElement.textContent = data.likes.length
-			likeButton.classList.toggle('card__like-button_is-active')
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
 export const deleteCard = (cardElement, cardId) => {
 	return fetch(`${config.baseUrl}/cards/${cardId}`, {
 		method: 'DELETE',
 		headers: config.headers
+	}).then(res => {
+		if (res.ok) {
+			return cardElement.remove()
+		}
+		return Promise.reject(`Ошибка: ${res.status}`)
 	})
-		.then(res => {
-			if (res.ok) {
-				return cardElement.remove()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.catch(error => {
-			console.log(error)
-		})
 }
 
 export const updateAvatar = avatar => {
@@ -138,22 +71,12 @@ export const updateAvatar = avatar => {
 		body: JSON.stringify({
 			avatar
 		})
-	})
-		.then(res => {
-			if (res.ok) {
-				return res.json()
-			}
-			return Promise.reject(`Ошибка: ${res.status}`)
-		})
-		.then(data => {
-			profileAvatar.style.backgroundImage = `url(${data.avatar})`
-		})
-		.catch(error => {
-			console.log(error)
-		})
+	}).then(checkResponse)
 }
 
 export const renderLoading = isLoading => {
-	const submitButton = document.querySelector('.popup__button')
-	submitButton.textContent = isLoading ? 'Сохранение...' : 'Сохранить'
+	const submitButton = document.querySelectorAll('.popup__button')
+	submitButton.forEach(
+		button => (button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
+	)
 }
