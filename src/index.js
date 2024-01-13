@@ -2,13 +2,11 @@ import {
 	deleteCard,
 	getInitialCards,
 	getUserInfo,
-	likeCard,
 	postNewCard,
-	renderLoading,
 	updateAvatar,
 	updateUserProfile
 } from './components/api'
-import { createCard } from './components/card'
+import { createCard, handleDeleteCard, handleLikeCard } from './components/card'
 import { closeModal, openModal } from './components/modal'
 import { catchError } from './components/utils.js'
 import { clearValidation, enableValidation } from './components/validation.js'
@@ -110,8 +108,8 @@ const createNewPlace = evt => {
 		.then(newCard => {
 			const cardElement = createCard(
 				newCard,
-				deleteCard,
-				likeCard,
+				handleDeleteCard,
+				handleLikeCard,
 				openImageModal,
 				userId
 			)
@@ -141,8 +139,8 @@ const renderCards = (cards, currentUserId) => {
 	cards.forEach(card => {
 		const cardElement = createCard(
 			card,
-			deleteCard,
-			likeCard,
+			handleDeleteCard,
+			handleLikeCard,
 			openImageModal,
 			currentUserId
 		)
@@ -150,18 +148,21 @@ const renderCards = (cards, currentUserId) => {
 	})
 }
 
-Promise.all([getUserInfo(), getInitialCards()])
-	.then(([userInfo, initialCardsData]) => {
-		renderCards(initialCardsData, userInfo._id)
-	})
-	.catch(catchError)
+const renderLoading = isLoading => {
+	const submitButton = document.querySelectorAll('.popup__button')
+	submitButton.forEach(
+		button => (button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
+	)
+}
 
-getUserInfo()
-	.then(data => {
-		userId = data._id
-		profileName.textContent = data.name
-		profileDescription.textContent = data.about
-		profileAvatar.style.backgroundImage = `url(${data.avatar})`
+Promise.all([getUserInfo(), getInitialCards()])
+	.then(([userData, cards]) => {
+		userId = userData._id
+		profileName.textContent = userData.name
+		profileDescription.textContent = userData.about
+		profileAvatar.style.backgroundImage = `url(${userData.avatar})`
+
+		renderCards(cards, userId)
 	})
 	.catch(catchError)
 

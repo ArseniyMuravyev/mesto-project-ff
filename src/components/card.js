@@ -1,9 +1,10 @@
+import { deleteCard, likeCard } from './api'
 import { catchError } from './utils'
 
 export const createCard = (
 	card,
-	deleteCard,
-	likeCard,
+	handleDeleteCard,
+	handleLikeCard,
 	openImageModal,
 	currentUserId
 ) => {
@@ -16,10 +17,11 @@ export const createCard = (
 	const likesCountElement = likeButton
 		.closest('.card')
 		.querySelector('.card__like-amount')
+
 	if (card.owner && card.owner._id === currentUserId) {
 		deleteButton.style.display = 'block'
 		deleteButton.addEventListener('click', () =>
-			deleteCard(cardElement, card._id)
+			handleDeleteCard(cardElement, card._id)
 		)
 	} else {
 		deleteButton.style.display = 'none'
@@ -31,14 +33,9 @@ export const createCard = (
 		likeButton.classList.add('card__like-button_is-active')
 	}
 
-	likeButton.addEventListener('click', () => {
-		likeCard(likeButton, card._id, currentUserId)
-			.then(data => {
-				likesCountElement.textContent = data.likes.length
-				likeButton.classList.toggle('card__like-button_is-active')
-			})
-			.catch(catchError)
-	})
+	likeButton.addEventListener('click', () =>
+		handleLikeCard(likeButton, likesCountElement, card._id, currentUserId)
+	)
 
 	cardImage.addEventListener('click', evt => openImageModal(evt))
 
@@ -48,4 +45,24 @@ export const createCard = (
 	likesCountElement.textContent = card.likes ? card.likes.length : 0
 
 	return cardElement
+}
+
+export const handleDeleteCard = (cardElement, cardId) => {
+	deleteCard(cardElement, cardId)
+		.then(() => cardElement.remove())
+		.catch(catchError)
+}
+
+export const handleLikeCard = (
+	likeButton,
+	likesCountElement,
+	cardId,
+	currentUserId
+) => {
+	likeCard(likeButton, cardId, currentUserId)
+		.then(data => {
+			likesCountElement.textContent = data.likes.length
+			likeButton.classList.toggle('card__like-button_is-active')
+		})
+		.catch(catchError)
 }

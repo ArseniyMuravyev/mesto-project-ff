@@ -56,12 +56,7 @@ export const deleteCard = (cardElement, cardId) => {
 	return fetch(`${config.baseUrl}/cards/${cardId}`, {
 		method: 'DELETE',
 		headers: config.headers
-	}).then(res => {
-		if (res.ok) {
-			return cardElement.remove()
-		}
-		return Promise.reject(`Ошибка: ${res.status}`)
-	})
+	}).then(checkResponse)
 }
 
 export const updateAvatar = avatar => {
@@ -72,11 +67,4 @@ export const updateAvatar = avatar => {
 			avatar
 		})
 	}).then(checkResponse)
-}
-
-export const renderLoading = isLoading => {
-	const submitButton = document.querySelectorAll('.popup__button')
-	submitButton.forEach(
-		button => (button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
-	)
 }
