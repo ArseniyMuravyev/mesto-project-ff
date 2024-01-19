@@ -1,6 +1,7 @@
+import { Config } from '../types/global.d'
 import { checkResponse } from './utils'
 
-const config = {
+const config: Config = {
 	baseUrl: 'https://nomoreparties.co/v1/wff-cohort-5',
 	headers: {
 		authorization: 'f019a5da-c98f-4c6e-b4b9-d7890c838afb',
@@ -20,7 +21,7 @@ export const getInitialCards = () => {
 	}).then(checkResponse)
 }
 
-export const updateUserProfile = (name, about) => {
+export const updateUserProfile = (name: string, about: string) => {
 	return fetch(`${config.baseUrl}/users/me`, {
 		method: 'PATCH',
 		headers: config.headers,
@@ -31,7 +32,7 @@ export const updateUserProfile = (name, about) => {
 	}).then(checkResponse)
 }
 
-export const postNewCard = (name, link) => {
+export const postNewCard = (name: string, link: string) => {
 	return fetch(`${config.baseUrl}/cards`, {
 		method: 'POST',
 		headers: config.headers,
@@ -43,7 +44,11 @@ export const postNewCard = (name, link) => {
 	}).then(checkResponse)
 }
 
-export const likeCard = (likeButton, cardId, userId) => {
+export const likeCard = (
+	likeButton: HTMLElement,
+	cardId: string,
+	userId: string
+) => {
 	return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {
 		method: likeButton.classList.contains('card__like-button_is-active')
 			? 'DELETE'
@@ -52,14 +57,14 @@ export const likeCard = (likeButton, cardId, userId) => {
 	}).then(checkResponse)
 }
 
-export const deleteCard = (cardElement, cardId) => {
+export const deleteCard = (cardElement: HTMLElement, cardId: string) => {
 	return fetch(`${config.baseUrl}/cards/${cardId}`, {
 		method: 'DELETE',
 		headers: config.headers
 	}).then(checkResponse)
 }
 
-export const updateAvatar = avatar => {
+export const updateAvatar = (avatar: string) => {
 	return fetch(`${config.baseUrl}/users/me/avatar`, {
 		method: 'PATCH',
 		headers: config.headers,

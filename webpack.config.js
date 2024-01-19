@@ -3,11 +3,11 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
-
 module.exports = {
 	entry: {
-		main: './src/index.js'
+		main: './src/components/index.ts'
 	},
+	devtool: 'inline-source-map',
 	output: {
 		path: path.resolve(__dirname, 'dist'),
 		filename: 'main.js',
@@ -22,6 +22,11 @@ module.exports = {
 	},
 	module: {
 		rules: [
+			{
+				test: /\.ts$/,
+				use: 'ts-loader',
+				exclude: '/node_modules/'
+			},
 			{
 				test: /\.js$/,
 				use: 'babel-loader',
@@ -45,6 +50,9 @@ module.exports = {
 				]
 			}
 		]
+	},
+	resolve: {
+		extensions: ['.ts', '.js']
 	},
 	plugins: [
 		new HtmlWebpackPlugin({

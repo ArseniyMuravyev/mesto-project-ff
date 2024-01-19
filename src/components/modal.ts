@@ -1,12 +1,12 @@
-const modals = document.querySelectorAll('.popup')
-let isEscListenerAdded = false
+const modals: NodeListOf<HTMLElement> = document.querySelectorAll('.popup')
+let isEscListenerAdded: boolean = false
 
-export const openModal = modal => {
+export const openModal = (modal: HTMLElement) => {
 	modal.classList.add('popup__opened')
 	addEscListener()
 }
 
-export const closeModal = modal => {
+export const closeModal = (modal: HTMLElement | null) => {
 	if (modal) {
 		modal.classList.remove('popup__opened')
 		removeEscListener()
@@ -25,16 +25,19 @@ const removeEscListener = () => {
 	isEscListenerAdded = false
 }
 
-const closeModalOnEsc = evt => {
+const closeModalOnEsc = (evt: KeyboardEvent) => {
 	if (evt.key === 'Escape') {
-		const openedModal = document.querySelector('.popup__opened')
+		const openedModal = document.querySelector('.popup__opened') as HTMLElement
 		closeModal(openedModal)
 	}
 }
 
 modals.forEach(modal => {
 	modal.addEventListener('click', evt => {
-		if (evt.target === modal || evt.target.classList.contains('popup__close')) {
+		if (
+			evt.target === modal ||
+			(evt.target as HTMLElement).classList.contains('popup__close')
+		) {
 			closeModal(modal)
 		}
 	})

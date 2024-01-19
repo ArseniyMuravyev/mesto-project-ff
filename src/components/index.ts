@@ -1,3 +1,5 @@
+import '../pages/index.css'
+import { Card, UserInfoType } from '../types/global.d'
 import {
 	deleteCard,
 	getInitialCards,
@@ -5,35 +7,59 @@ import {
 	postNewCard,
 	updateAvatar,
 	updateUserProfile
-} from './components/api'
-import { createCard, handleDeleteCard, handleLikeCard } from './components/card'
-import { closeModal, openModal } from './components/modal'
-import { catchError } from './components/utils.js'
-import { clearValidation, enableValidation } from './components/validation.js'
-import './pages/index.css'
+} from './api'
+import { createCard, handleDeleteCard, handleLikeCard } from './card'
+import { closeModal, openModal } from './modal'
+import { catchError } from './utils'
+import { clearValidation, enableValidation } from './validation'
 
-const editForm = document.forms.edit_profile
-const newPlaceForm = document.forms.new_place
-const editAvatarForm = document.querySelector('.popup_type_avatar')
-const editButton = document.querySelector('.profile__edit-button')
-const addButton = document.querySelector('.profile__add-button')
-const modalEdit = document.querySelector('.popup_type_edit')
-const nameInput = editForm.querySelector('.popup__input_type_name')
-const jobInput = editForm.querySelector('.popup__input_type_description')
-const avatarInput = document.querySelector('.popup__input_type_avatar_url')
-const profileName = document.querySelector('.profile__title')
-const profileDescription = document.querySelector('.profile__description')
-const placesList = document.querySelector('.places__list')
-const modalNewCard = document.querySelector('.popup_type_new-card')
-const profileImage = document.querySelector('.profile__image')
-const confirmationModal = document.querySelector('.popup_type_delete_card')
-const cardNameInput = document.querySelector('.popup__input_type_card-name')
-const imageUrlInput = document.querySelector('.popup__input_type_url')
-const modalImage = document.querySelector('.popup_type_image')
-const popupImage = modalImage.querySelector('.popup__image')
-const popupCaption = modalImage.querySelector('.popup__caption')
-const profileAvatar = document.querySelector('.profile__image')
-let userId
+const editForm = document.forms.namedItem('edit_profile') as HTMLFormElement
+const newPlaceForm: HTMLFormElement = document.forms.namedItem(
+	'new_place'
+) as HTMLFormElement
+const editAvatarForm = document.querySelector(
+	'.popup_type_avatar'
+) as HTMLFormElement
+const editButton: HTMLButtonElement = document.querySelector(
+	'.profile__edit-button'
+)
+const addButton: HTMLButtonElement = document.querySelector(
+	'.profile__add-button'
+)
+const modalEdit: HTMLElement = document.querySelector('.popup_type_edit')
+const nameInput: HTMLInputElement = editForm.querySelector(
+	'.popup__input_type_name'
+)
+const jobInput: HTMLInputElement = editForm.querySelector(
+	'.popup__input_type_description'
+)
+const avatarInput: HTMLInputElement = document.querySelector(
+	'.popup__input_type_avatar_url'
+)
+const profileName: HTMLElement = document.querySelector('.profile__title')
+const profileDescription: HTMLElement = document.querySelector(
+	'.profile__description'
+)
+const placesList: HTMLElement = document.querySelector('.places__list')
+const modalNewCard: HTMLElement = document.querySelector('.popup_type_new-card')
+const profileImage: HTMLImageElement = document.querySelector('.profile__image')
+const confirmationModal: HTMLElement = document.querySelector(
+	'.popup_type_delete_card'
+)
+const cardNameInput: HTMLInputElement = document.querySelector(
+	'.popup__input_type_card-name'
+)
+const imageUrlInput: HTMLInputElement = document.querySelector(
+	'.popup__input_type_url'
+)
+const modalImage: HTMLImageElement = document.querySelector('.popup_type_image')
+const popupImage: HTMLImageElement = modalImage.querySelector('.popup__image')
+const popupCaption: HTMLElement = modalImage.querySelector('.popup__caption')
+const profileAvatar: HTMLElement = document.querySelector('.profile__image')
+const deleteButtonSubmit: HTMLButtonElement = confirmationModal.querySelector(
+	'.popup__button-delete'
+)
+let userId: string
 
 profileImage.addEventListener('click', () => {
 	openModal(editAvatarForm)
@@ -56,11 +82,11 @@ const setFormValues = () => {
 	jobInput.value = profileDescription.textContent
 }
 
-const handleFormSubmit = evt => {
+const handleFormSubmit = (evt: Event) => {
 	evt.preventDefault()
 	renderLoading(true)
 	updateUserProfile(nameInput.value, jobInput.value)
-		.then(data => {
+		.then((data: { name: string; about: string }) => {
 			profileName.textContent = data.name
 			profileDescription.textContent = data.about
 		})
@@ -69,11 +95,11 @@ const handleFormSubmit = evt => {
 		.finally(() => renderLoading(false))
 }
 
-const handleAvatarFormSubmit = evt => {
+const handleAvatarFormSubmit = (evt: Event) => {
 	evt.preventDefault()
 	renderLoading(true)
 	updateAvatar(avatarInput.value)
-		.then(data => {
+		.then((data: { avatar: string }) => {
 			profileAvatar.style.backgroundImage = `url(${data.avatar})`
 		})
 		.then(() => closeModal(editAvatarForm))
@@ -81,15 +107,23 @@ const handleAvatarFormSubmit = evt => {
 		.finally(() => renderLoading(false))
 }
 
-const handleConfirmationModal = (evt, cardElement, cardId) => {
+const handleConfirmationModal = (
+	evt: Event,
+	cardElement: HTMLElement,
+	cardId: string
+) => {
 	evt.preventDefault()
+	deleteButtonSubmit.textContent = 'Удаление...'
 	deleteCard(cardElement, cardId)
 		.then(() => closeModal(confirmationModal))
 		.catch(catchError)
 }
 
-const openImageModal = evt => {
-	if (evt.target.classList.contains('card__image')) {
+const openImageModal = (evt: Event) => {
+	if (
+		evt.target instanceof HTMLImageElement &&
+		evt.target.classList.contains('card__image')
+	) {
 		const cardElement = evt.target.closest('.places__item')
 		const cardTitle = cardElement.querySelector('.card__title').textContent
 
@@ -101,11 +135,11 @@ const openImageModal = evt => {
 	}
 }
 
-const createNewPlace = evt => {
+const createNewPlace = (evt: Event) => {
 	evt.preventDefault()
 	renderLoading(true)
 	postNewCard(cardNameInput.value, imageUrlInput.value)
-		.then(newCard => {
+		.then((newCard: Card) => {
 			const cardElement = createCard(
 				newCard,
 				handleDeleteCard,
@@ -135,8 +169,8 @@ const formSettings = {
 	errorClass: 'popup__error_visible'
 }
 
-const renderCards = (cards, currentUserId) => {
-	cards.forEach(card => {
+const renderCards = (cards: Card[], currentUserId: string) => {
+	cards.forEach((card: Card) => {
 		const cardElement = createCard(
 			card,
 			handleDeleteCard,
@@ -148,7 +182,7 @@ const renderCards = (cards, currentUserId) => {
 	})
 }
 
-const renderLoading = isLoading => {
+const renderLoading = (isLoading: boolean) => {
 	const submitButton = document.querySelectorAll('.popup__button')
 	submitButton.forEach(
 		button => (button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
@@ -156,7 +190,7 @@ const renderLoading = isLoading => {
 }
 
 Promise.all([getUserInfo(), getInitialCards()])
-	.then(([userData, cards]) => {
+	.then(([userData, cards]: [UserInfoType, Card[]]) => {
 		userId = userData._id
 		profileName.textContent = userData.name
 		profileDescription.textContent = userData.about

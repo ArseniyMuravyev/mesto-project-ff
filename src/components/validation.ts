@@ -1,31 +1,37 @@
+import { ValidationSettings } from '../types/global.d'
+
 const showInputError = (
-	formElement,
-	inputElement,
-	errorMessage,
-	{ inputErrorClass, errorClass }
+	formElement: HTMLElement,
+	inputElement: HTMLInputElement,
+	errorMessage: string,
+	settings: ValidationSettings
 ) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
 	if (errorElement) {
-		inputElement.classList.add(inputErrorClass)
+		inputElement.classList.add(settings.inputErrorClass)
 		errorElement.textContent = errorMessage
-		errorElement.classList.add(errorClass)
+		errorElement.classList.add(settings.errorClass)
 	}
 }
 
 const hideInputError = (
-	formElement,
-	inputElement,
-	{ inputErrorClass, errorClass }
+	formElement: HTMLElement,
+	inputElement: HTMLInputElement,
+	settings: ValidationSettings
 ) => {
 	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
 	if (errorElement) {
-		inputElement.classList.remove(inputErrorClass)
-		errorElement.classList.remove(errorClass)
+		inputElement.classList.remove(settings.inputErrorClass)
+		errorElement.classList.remove(settings.errorClass)
 		errorElement.textContent = ''
 	}
 }
 
-const checkInputValidity = (formElement, inputElement, settings) => {
+const checkInputValidity = (
+	formElement: HTMLElement,
+	inputElement: HTMLInputElement,
+	settings: ValidationSettings
+) => {
 	if (!inputElement.validity.valid) {
 		showInputError(
 			formElement,
@@ -53,35 +59,40 @@ const checkInputValidity = (formElement, inputElement, settings) => {
 	}
 }
 
-const hasInvalidInput = inputList => {
+const hasInvalidInput = (inputList: HTMLInputElement[]) => {
 	return inputList.some(inputElement => {
 		return !inputElement.validity.valid
 	})
 }
 
 const toggleButtonState = (
-	inputList,
-	buttonElement,
-	{ inactiveButtonClass }
+	inputList: HTMLInputElement[],
+	buttonElement: HTMLButtonElement,
+	settings: ValidationSettings
 ) => {
 	if (hasInvalidInput(inputList)) {
-		buttonElement.setAttribute('disabled', true)
-		buttonElement.classList.add(inactiveButtonClass)
+		buttonElement.setAttribute('disabled', 'true')
+		buttonElement.classList.add(settings.inactiveButtonClass)
 	} else {
 		buttonElement.removeAttribute('disabled')
-		buttonElement.classList.remove(inactiveButtonClass)
+		buttonElement.classList.remove(settings.inactiveButtonClass)
 	}
 }
 
-const setEventListeners = (formElement, settings) => {
+const setEventListeners = (
+	formElement: HTMLElement,
+	settings: ValidationSettings
+) => {
 	const inputList = Array.from(
 		formElement.querySelectorAll(settings.inputSelector)
-	)
-	const buttonElement = formElement.querySelector(settings.submitButtonSelector)
+	) as HTMLInputElement[]
+	const buttonElement = formElement.querySelector(
+		settings.submitButtonSelector
+	) as HTMLButtonElement
 
 	toggleButtonState(inputList, buttonElement, settings)
 
-	inputList.forEach(inputElement => {
+	inputList.forEach((inputElement: HTMLInputElement) => {
 		inputElement.addEventListener('input', () => {
 			checkInputValidity(formElement, inputElement, settings)
 			toggleButtonState(inputList, buttonElement, settings)
@@ -89,9 +100,9 @@ const setEventListeners = (formElement, settings) => {
 	})
 }
 
-const enableValidation = settings => {
+const enableValidation = (settings: ValidationSettings) => {
 	const formList = Array.from(document.querySelectorAll(settings.formSelector))
-	formList.forEach(formElement => {
+	formList.forEach((formElement: HTMLElement) => {
 		formElement.addEventListener('submit', evt => {
 			evt.preventDefault()
 		})
@@ -99,15 +110,20 @@ const enableValidation = settings => {
 	})
 }
 
-const clearValidation = (formElement, settings) => {
+const clearValidation = (
+	formElement: HTMLElement,
+	settings: ValidationSettings
+) => {
 	const inputList = Array.from(
 		formElement.querySelectorAll(settings.inputSelector)
-	)
-	inputList.forEach(inputElement => {
+	) as HTMLInputElement[]
+	inputList.forEach((inputElement: HTMLInputElement) => {
 		hideInputError(formElement, inputElement, settings)
 	})
 
-	const buttonElement = formElement.querySelector(settings.submitButtonSelector)
+	const buttonElement = formElement.querySelector(
+		settings.submitButtonSelector
+	) as HTMLButtonElement
 	toggleButtonState(inputList, buttonElement, settings)
 }
 
