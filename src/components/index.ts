@@ -13,13 +13,10 @@ import { closeModal, openModal } from './modal'
 import { catchError } from './utils'
 import { clearValidation, enableValidation } from './validation'
 
-const editForm = document.forms.namedItem('edit_profile') as HTMLFormElement
-const newPlaceForm: HTMLFormElement = document.forms.namedItem(
-	'new_place'
-) as HTMLFormElement
-const editAvatarForm = document.querySelector(
-	'.popup_type_avatar'
-) as HTMLFormElement
+const editForm: HTMLFormElement = document.forms.namedItem('edit_profile')
+const newPlaceForm: HTMLFormElement = document.forms.namedItem('new_place')
+const editAvatarForm: HTMLFormElement =
+	document.querySelector('.popup_type_avatar')
 const editButton: HTMLButtonElement = document.querySelector(
 	'.profile__edit-button'
 )
@@ -183,9 +180,11 @@ const renderCards = (cards: Card[], currentUserId: string) => {
 }
 
 const renderLoading = (isLoading: boolean) => {
-	const submitButton = document.querySelectorAll('.popup__button')
+	const submitButton: NodeListOf<HTMLButtonElement> =
+		document.querySelectorAll('.popup__button')
 	submitButton.forEach(
-		button => (button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
+		(button: HTMLElement) =>
+			(button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
 	)
 }
 

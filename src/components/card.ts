@@ -1,6 +1,6 @@
+import { Card, Likes } from '../types/global'
 import { deleteCard, likeCard } from './api'
 import { catchError } from './utils'
-import { Card, Likes} from '../types/global'
 
 export const createCard = (
 	card: Card,
@@ -14,25 +14,21 @@ export const createCard = (
 	openImageModal: (evt: MouseEvent) => void,
 	currentUserId: string
 ): HTMLElement => {
-	const cardTemplate = document.querySelector(
-		'#card-template'
-	) as HTMLTemplateElement
+	const cardTemplate: HTMLTemplateElement =
+		document.querySelector('#card-template')
 	const cardElement = cardTemplate.content
 		.querySelector('.card')
 		.cloneNode(true) as HTMLElement
-	const cardImage = cardElement.querySelector(
-		'.card__image'
-	) as HTMLImageElement
-	const cardTitle = cardElement.querySelector('.card__title') as HTMLElement
-	const deleteButton = cardElement.querySelector(
+	const cardImage: HTMLImageElement = cardElement.querySelector('.card__image')
+	const cardTitle: HTMLElement = cardElement.querySelector('.card__title')
+	const deleteButton: HTMLElement = cardElement.querySelector(
 		'.card__delete-button'
-	) as HTMLElement
-	const likeButton = cardElement.querySelector(
-		'.card__like-button'
-	) as HTMLElement
-	const likesCountElement = likeButton
+	)
+	const likeButton: HTMLElement =
+		cardElement.querySelector('.card__like-button')
+	const likesCountElement: HTMLElement = likeButton
 		.closest('.card')
-		.querySelector('.card__like-amount') as HTMLElement
+		.querySelector('.card__like-amount')
 
 	if (card.owner && card.owner._id === currentUserId) {
 		deleteButton.style.display = 'block'

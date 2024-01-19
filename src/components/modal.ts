@@ -27,7 +27,7 @@ const removeEscListener = () => {
 
 const closeModalOnEsc = (evt: KeyboardEvent) => {
 	if (evt.key === 'Escape') {
-		const openedModal = document.querySelector('.popup__opened') as HTMLElement
+		const openedModal: HTMLElement = document.querySelector('.popup__opened')
 		closeModal(openedModal)
 	}
 }

@@ -83,12 +83,12 @@ const setEventListeners = (
 	formElement: HTMLElement,
 	settings: ValidationSettings
 ) => {
-	const inputList = Array.from(
+	const inputList: HTMLInputElement[] = Array.from(
 		formElement.querySelectorAll(settings.inputSelector)
-	) as HTMLInputElement[]
-	const buttonElement = formElement.querySelector(
+	)
+	const buttonElement: HTMLButtonElement = formElement.querySelector(
 		settings.submitButtonSelector
-	) as HTMLButtonElement
+	)
 
 	toggleButtonState(inputList, buttonElement, settings)
 
@@ -101,7 +101,9 @@ const setEventListeners = (
 }
 
 const enableValidation = (settings: ValidationSettings) => {
-	const formList = Array.from(document.querySelectorAll(settings.formSelector))
+	const formList: HTMLFormElement[] = Array.from(
+		document.querySelectorAll(settings.formSelector)
+	)
 	formList.forEach((formElement: HTMLElement) => {
 		formElement.addEventListener('submit', evt => {
 			evt.preventDefault()
@@ -114,16 +116,16 @@ const clearValidation = (
 	formElement: HTMLElement,
 	settings: ValidationSettings
 ) => {
-	const inputList = Array.from(
+	const inputList: HTMLInputElement[] = Array.from(
 		formElement.querySelectorAll(settings.inputSelector)
-	) as HTMLInputElement[]
+	)
 	inputList.forEach((inputElement: HTMLInputElement) => {
 		hideInputError(formElement, inputElement, settings)
 	})
 
-	const buttonElement = formElement.querySelector(
+	const buttonElement: HTMLButtonElement = formElement.querySelector(
 		settings.submitButtonSelector
-	) as HTMLButtonElement
+	)
 	toggleButtonState(inputList, buttonElement, settings)
 }
 
