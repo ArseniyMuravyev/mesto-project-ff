@@ -1,7 +1,7 @@
 import { ValidationSettings } from '../types/global.d'
 
 const showInputError = (
-	formElement: HTMLElement,
+	formElement: HTMLFormElement,
 	inputElement: HTMLInputElement,
 	errorMessage: string,
 	settings: ValidationSettings
@@ -15,7 +15,7 @@ const showInputError = (
 }
 
 const hideInputError = (
-	formElement: HTMLElement,
+	formElement: HTMLFormElement,
 	inputElement: HTMLInputElement,
 	settings: ValidationSettings
 ) => {
@@ -28,7 +28,7 @@ const hideInputError = (
 }
 
 const checkInputValidity = (
-	formElement: HTMLElement,
+	formElement: HTMLFormElement,
 	inputElement: HTMLInputElement,
 	settings: ValidationSettings
 ) => {
@@ -80,7 +80,7 @@ const toggleButtonState = (
 }
 
 const setEventListeners = (
-	formElement: HTMLElement,
+	formElement: HTMLFormElement,
 	settings: ValidationSettings
 ) => {
 	const inputList: HTMLInputElement[] = Array.from(
@@ -104,7 +104,7 @@ const enableValidation = (settings: ValidationSettings) => {
 	const formList: HTMLFormElement[] = Array.from(
 		document.querySelectorAll(settings.formSelector)
 	)
-	formList.forEach((formElement: HTMLElement) => {
+	formList.forEach((formElement: HTMLFormElement) => {
 		formElement.addEventListener('submit', evt => {
 			evt.preventDefault()
 		})
@@ -113,7 +113,7 @@ const enableValidation = (settings: ValidationSettings) => {
 }
 
 const clearValidation = (
-	formElement: HTMLElement,
+	formElement: HTMLFormElement,
 	settings: ValidationSettings
 ) => {
 	const inputList: HTMLInputElement[] = Array.from(

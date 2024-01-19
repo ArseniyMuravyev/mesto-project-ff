@@ -13,59 +13,64 @@ import { closeModal, openModal } from './modal'
 import { catchError } from './utils'
 import { clearValidation, enableValidation } from './validation'
 
-const editForm: HTMLFormElement = document.forms.namedItem('edit_profile')
+const editAvatarForm: HTMLFormElement = document.forms.namedItem('edit_avatar')
+const editProfileForm: HTMLFormElement =
+	document.forms.namedItem('edit_profile')
 const newPlaceForm: HTMLFormElement = document.forms.namedItem('new_place')
-const editAvatarForm: HTMLFormElement =
+const modalEditAvatar: HTMLDivElement =
 	document.querySelector('.popup_type_avatar')
+const modalEditProfile: HTMLDivElement =
+	document.querySelector('.popup_type_edit')
+const modalImage: HTMLDivElement = document.querySelector('.popup_type_image')
+const modalNewCard: HTMLDivElement = document.querySelector(
+	'.popup_type_new-card'
+)
+const modalDeleteConfirmation: HTMLDivElement = document.querySelector(
+	'.popup_type_delete_card'
+)
 const editButton: HTMLButtonElement = document.querySelector(
 	'.profile__edit-button'
 )
 const addButton: HTMLButtonElement = document.querySelector(
 	'.profile__add-button'
 )
-const modalEdit: HTMLElement = document.querySelector('.popup_type_edit')
-const nameInput: HTMLInputElement = editForm.querySelector(
+const deleteButtonSubmit: HTMLButtonElement =
+	modalDeleteConfirmation.querySelector('.popup__button-delete')
+const nameInput: HTMLInputElement = editProfileForm.querySelector(
 	'.popup__input_type_name'
 )
-const jobInput: HTMLInputElement = editForm.querySelector(
+const jobInput: HTMLInputElement = editProfileForm.querySelector(
 	'.popup__input_type_description'
 )
 const avatarInput: HTMLInputElement = document.querySelector(
 	'.popup__input_type_avatar_url'
 )
-const profileName: HTMLElement = document.querySelector('.profile__title')
-const profileDescription: HTMLElement = document.querySelector(
+const profileName: HTMLTitleElement = document.querySelector('.profile__title')
+const profileDescription: HTMLParagraphElement = document.querySelector(
 	'.profile__description'
 )
-const placesList: HTMLElement = document.querySelector('.places__list')
-const modalNewCard: HTMLElement = document.querySelector('.popup_type_new-card')
 const profileImage: HTMLImageElement = document.querySelector('.profile__image')
-const confirmationModal: HTMLElement = document.querySelector(
-	'.popup_type_delete_card'
-)
+const placesList: HTMLUListElement = document.querySelector('.places__list')
 const cardNameInput: HTMLInputElement = document.querySelector(
 	'.popup__input_type_card-name'
 )
 const imageUrlInput: HTMLInputElement = document.querySelector(
 	'.popup__input_type_url'
 )
-const modalImage: HTMLImageElement = document.querySelector('.popup_type_image')
 const popupImage: HTMLImageElement = modalImage.querySelector('.popup__image')
-const popupCaption: HTMLElement = modalImage.querySelector('.popup__caption')
-const profileAvatar: HTMLElement = document.querySelector('.profile__image')
-const deleteButtonSubmit: HTMLButtonElement = confirmationModal.querySelector(
-	'.popup__button-delete'
-)
-let userId: string
+const popupCaption: HTMLParagraphElement =
+	modalImage.querySelector('.popup__caption')
+const profileAvatar: HTMLDivElement = document.querySelector('.profile__image')
+let userId: string | null
 
 profileImage.addEventListener('click', () => {
-	openModal(editAvatarForm)
+	openModal(modalEditAvatar)
 	clearValidation(editAvatarForm, formSettings)
 })
 
 editButton.addEventListener('click', () => {
-	openModal(modalEdit)
-	clearValidation(editForm, formSettings)
+	openModal(modalEditProfile)
+	clearValidation(editProfileForm, formSettings)
 	setFormValues()
 })
 
@@ -87,7 +92,7 @@ const handleFormSubmit = (evt: Event) => {
 			profileName.textContent = data.name
 			profileDescription.textContent = data.about
 		})
-		.then(() => closeModal(modalEdit))
+		.then(() => closeModal(modalEditProfile))
 		.catch(catchError)
 		.finally(() => renderLoading(false))
 }
@@ -99,20 +104,20 @@ const handleAvatarFormSubmit = (evt: Event) => {
 		.then((data: { avatar: string }) => {
 			profileAvatar.style.backgroundImage = `url(${data.avatar})`
 		})
-		.then(() => closeModal(editAvatarForm))
+		.then(() => closeModal(modalEditAvatar))
 		.catch(catchError)
 		.finally(() => renderLoading(false))
 }
 
-const handleConfirmationModal = (
+const handleDeleteConfirmation = (
 	evt: Event,
-	cardElement: HTMLElement,
+	cardElement: HTMLLIElement,
 	cardId: string
 ) => {
 	evt.preventDefault()
 	deleteButtonSubmit.textContent = 'Удаление...'
 	deleteCard(cardElement, cardId)
-		.then(() => closeModal(confirmationModal))
+		.then(() => closeModal(modalDeleteConfirmation))
 		.catch(catchError)
 }
 
@@ -143,7 +148,7 @@ const createNewPlace = (evt: Event) => {
 				handleLikeCard,
 				openImageModal,
 				userId
-			)
+			) as HTMLLIElement
 
 			placesList.prepend(cardElement)
 		})
@@ -154,7 +159,7 @@ const createNewPlace = (evt: Event) => {
 }
 
 editAvatarForm.addEventListener('submit', handleAvatarFormSubmit)
-editForm.addEventListener('submit', handleFormSubmit)
+editProfileForm.addEventListener('submit', handleFormSubmit)
 newPlaceForm.addEventListener('submit', createNewPlace)
 
 const formSettings = {
@@ -174,7 +179,7 @@ const renderCards = (cards: Card[], currentUserId: string) => {
 			handleLikeCard,
 			openImageModal,
 			currentUserId
-		)
+		) as HTMLLIElement
 		placesList.append(cardElement)
 	})
 }
@@ -183,7 +188,7 @@ const renderLoading = (isLoading: boolean) => {
 	const submitButton: NodeListOf<HTMLButtonElement> =
 		document.querySelectorAll('.popup__button')
 	submitButton.forEach(
-		(button: HTMLElement) =>
+		(button: HTMLButtonElement) =>
 			(button.textContent = isLoading ? 'Сохранение...' : 'Сохранить')
 	)
 }
@@ -202,8 +207,7 @@ Promise.all([getUserInfo(), getInitialCards()])
 enableValidation(formSettings)
 
 export {
-	confirmationModal,
-	handleConfirmationModal,
+	modalDeleteConfirmation,
 	modalNewCard,
 	newPlaceForm,
 	placesList,

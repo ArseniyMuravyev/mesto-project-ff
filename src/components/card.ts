@@ -4,29 +4,29 @@ import { catchError } from './utils'
 
 export const createCard = (
 	card: Card,
-	handleDeleteCard: (cardElement: HTMLElement, cardId: string) => void,
+	handleDeleteCard: (cardElement: HTMLLIElement, cardId: string) => void,
 	handleLikeCard: (
-		likeButton: HTMLElement,
-		likesCountElement: HTMLElement,
+		likeButton: HTMLButtonElement,
+		likesCountElement: HTMLSpanElement,
 		cardId: string,
 		currentUserId: string
 	) => void,
 	openImageModal: (evt: MouseEvent) => void,
 	currentUserId: string
-): HTMLElement => {
+): HTMLLIElement => {
 	const cardTemplate: HTMLTemplateElement =
 		document.querySelector('#card-template')
 	const cardElement = cardTemplate.content
 		.querySelector('.card')
-		.cloneNode(true) as HTMLElement
+		.cloneNode(true) as HTMLLIElement
 	const cardImage: HTMLImageElement = cardElement.querySelector('.card__image')
-	const cardTitle: HTMLElement = cardElement.querySelector('.card__title')
-	const deleteButton: HTMLElement = cardElement.querySelector(
+	const cardTitle: HTMLTitleElement = cardElement.querySelector('.card__title')
+	const deleteButton: HTMLButtonElement = cardElement.querySelector(
 		'.card__delete-button'
 	)
-	const likeButton: HTMLElement =
+	const likeButton: HTMLButtonElement =
 		cardElement.querySelector('.card__like-button')
-	const likesCountElement: HTMLElement = likeButton
+	const likesCountElement: HTMLSpanElement = likeButton
 		.closest('.card')
 		.querySelector('.card__like-amount')
 
@@ -61,15 +61,18 @@ export const createCard = (
 	return cardElement
 }
 
-export const handleDeleteCard = (cardElement: HTMLElement, cardId: string) => {
+export const handleDeleteCard = (
+	cardElement: HTMLLIElement,
+	cardId: string
+) => {
 	deleteCard(cardElement, cardId)
 		.then(() => cardElement.remove())
 		.catch(catchError)
 }
 
 export const handleLikeCard = (
-	likeButton: HTMLElement,
-	likesCountElement: HTMLElement,
+	likeButton: HTMLButtonElement,
+	likesCountElement: HTMLSpanElement,
 	cardId: string,
 	currentUserId: string
 ) => {

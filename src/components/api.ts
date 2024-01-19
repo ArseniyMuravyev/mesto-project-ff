@@ -45,7 +45,7 @@ export const postNewCard = (name: string, link: string) => {
 }
 
 export const likeCard = (
-	likeButton: HTMLElement,
+	likeButton: HTMLButtonElement,
 	cardId: string,
 	userId: string
 ) => {
@@ -57,7 +57,7 @@ export const likeCard = (
 	}).then(checkResponse)
 }
 
-export const deleteCard = (cardElement: HTMLElement, cardId: string) => {
+export const deleteCard = (cardElement: HTMLLIElement, cardId: string) => {
 	return fetch(`${config.baseUrl}/cards/${cardId}`, {
 		method: 'DELETE',
 		headers: config.headers
