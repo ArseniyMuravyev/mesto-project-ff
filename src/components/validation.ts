@@ -1,4 +1,11 @@
-import { ValidationSettings } from '../types/global.d'
+interface ValidationSettings {
+	formSelector: string
+	inputSelector: string
+	submitButtonSelector: string
+	inactiveButtonClass: string
+	inputErrorClass: string
+	errorClass: string
+}
 
 const showInputError = (
 	formElement: HTMLFormElement,
@@ -6,7 +13,9 @@ const showInputError = (
 	errorMessage: string,
 	settings: ValidationSettings
 ) => {
-	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
+	const errorElement: HTMLSpanElement = formElement.querySelector(
+		`.${inputElement.id}-error`
+	)
 	if (errorElement) {
 		inputElement.classList.add(settings.inputErrorClass)
 		errorElement.textContent = errorMessage
@@ -19,7 +28,9 @@ const hideInputError = (
 	inputElement: HTMLInputElement,
 	settings: ValidationSettings
 ) => {
-	const errorElement = formElement.querySelector(`.${inputElement.id}-error`)
+	const errorElement: HTMLSpanElement = formElement.querySelector(
+		`.${inputElement.id}-error`
+	)
 	if (errorElement) {
 		inputElement.classList.remove(settings.inputErrorClass)
 		errorElement.classList.remove(settings.errorClass)

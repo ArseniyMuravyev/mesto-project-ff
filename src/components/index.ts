@@ -1,5 +1,4 @@
 import '../pages/index.css'
-import { Card, UserInfoType } from '../types/global.d'
 import {
 	deleteCard,
 	getInitialCards,
@@ -8,10 +7,17 @@ import {
 	updateAvatar,
 	updateUserProfile
 } from './api'
-import { createCard, handleDeleteCard, handleLikeCard } from './card'
+import { Card, createCard, handleDeleteCardClick, handleLikeCard } from './card'
 import { closeModal, openModal } from './modal'
 import { catchError } from './utils'
 import { clearValidation, enableValidation } from './validation'
+
+interface UserInfoType {
+	_id: string
+	name: string
+	about: string
+	avatar: string
+}
 
 const editAvatarForm: HTMLFormElement = document.forms.namedItem('edit_avatar')
 const editProfileForm: HTMLFormElement =
@@ -61,7 +67,8 @@ const popupImage: HTMLImageElement = modalImage.querySelector('.popup__image')
 const popupCaption: HTMLParagraphElement =
 	modalImage.querySelector('.popup__caption')
 const profileAvatar: HTMLDivElement = document.querySelector('.profile__image')
-let userId: string | null
+let userId: string
+let submitFormConfirm = (): void => {}
 
 profileImage.addEventListener('click', () => {
 	openModal(modalEditAvatar)
@@ -84,7 +91,7 @@ const setFormValues = () => {
 	jobInput.value = profileDescription.textContent
 }
 
-const handleFormSubmit = (evt: Event) => {
+const handleFormSubmit = (evt: MouseEvent) => {
 	evt.preventDefault()
 	renderLoading(true)
 	updateUserProfile(nameInput.value, jobInput.value)
@@ -97,7 +104,7 @@ const handleFormSubmit = (evt: Event) => {
 		.finally(() => renderLoading(false))
 }
 
-const handleAvatarFormSubmit = (evt: Event) => {
+const handleAvatarFormSubmit = (evt: MouseEvent) => {
 	evt.preventDefault()
 	renderLoading(true)
 	updateAvatar(avatarInput.value)
@@ -109,25 +116,30 @@ const handleAvatarFormSubmit = (evt: Event) => {
 		.finally(() => renderLoading(false))
 }
 
-const handleDeleteConfirmation = (
-	evt: Event,
-	cardElement: HTMLLIElement,
-	cardId: string
-) => {
-	evt.preventDefault()
-	deleteButtonSubmit.textContent = 'Удаление...'
-	deleteCard(cardElement, cardId)
-		.then(() => closeModal(modalDeleteConfirmation))
-		.catch(catchError)
+const handleDeleteCard = (cardElement: HTMLLIElement, cardId: string) => {
+	submitFormConfirm = () => {
+		deleteButtonSubmit.textContent = 'Удаление...'
+		deleteCard(cardId)
+			.then(() => {
+				handleDeleteCardClick(cardElement)
+				closeModal(modalDeleteConfirmation)
+			})
+			.catch(catchError)
+			.finally(() => {
+				deleteButtonSubmit.textContent = 'Да'
+			})
+	}
+	openModal(modalDeleteConfirmation)
 }
 
-const openImageModal = (evt: Event) => {
+const openImageModal = (evt: MouseEvent) => {
 	if (
 		evt.target instanceof HTMLImageElement &&
 		evt.target.classList.contains('card__image')
 	) {
-		const cardElement = evt.target.closest('.places__item')
-		const cardTitle = cardElement.querySelector('.card__title').textContent
+		const cardElement: HTMLLIElement = evt.target.closest('.places__item')
+		const cardTitle: string =
+			cardElement.querySelector('.card__title').textContent
 
 		popupImage.src = evt.target.getAttribute('src')
 		popupImage.alt = cardTitle
@@ -137,7 +149,7 @@ const openImageModal = (evt: Event) => {
 	}
 }
 
-const createNewPlace = (evt: Event) => {
+const createNewPlace = (evt: MouseEvent) => {
 	evt.preventDefault()
 	renderLoading(true)
 	postNewCard(cardNameInput.value, imageUrlInput.value)
@@ -161,6 +173,10 @@ const createNewPlace = (evt: Event) => {
 editAvatarForm.addEventListener('submit', handleAvatarFormSubmit)
 editProfileForm.addEventListener('submit', handleFormSubmit)
 newPlaceForm.addEventListener('submit', createNewPlace)
+modalDeleteConfirmation.addEventListener('submit', (evt: MouseEvent) => {
+	evt.preventDefault()
+	submitFormConfirm()
+})
 
 const formSettings = {
 	formSelector: '.popup__form',

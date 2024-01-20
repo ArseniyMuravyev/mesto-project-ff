@@ -1,6 +1,25 @@
-import { Card, Likes } from '../types/global'
-import { deleteCard, likeCard } from './api'
+import { likeCard } from './api'
 import { catchError } from './utils'
+
+export interface Card {
+	owner: {
+		_id: string
+	}
+	likes?: {
+		_id: string
+	}[]
+	_id: string
+	link: string
+	name: string
+}
+
+interface Likes {
+	name: string
+	about: string
+	avatar: string
+	_id: string
+	cohort: string
+}
 
 export const createCard = (
 	card: Card,
@@ -31,12 +50,11 @@ export const createCard = (
 		.querySelector('.card__like-amount')
 
 	if (card.owner && card.owner._id === currentUserId) {
-		deleteButton.style.display = 'block'
 		deleteButton.addEventListener('click', () =>
 			handleDeleteCard(cardElement, card._id)
 		)
 	} else {
-		deleteButton.style.display = 'none'
+		deleteButton.remove()
 	}
 
 	const isLikedByCurrentUser =
@@ -61,13 +79,8 @@ export const createCard = (
 	return cardElement
 }
 
-export const handleDeleteCard = (
-	cardElement: HTMLLIElement,
-	cardId: string
-) => {
-	deleteCard(cardElement, cardId)
-		.then(() => cardElement.remove())
-		.catch(catchError)
+export const handleDeleteCardClick = (cardElement: HTMLLIElement) => {
+	cardElement.remove()
 }
 
 export const handleLikeCard = (
